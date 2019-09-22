@@ -6,6 +6,8 @@ double ledBrightness; //output
 
 double kp = .1, ki = 10, kd = .012;
 
+int pythonSerialData = 0;
+
 #define photocellPin 0
 #define ledPin 5
 
@@ -23,13 +25,15 @@ void setup() {
 
 void loop() {
   if (Serial.available()) {
-    int pythonSerialData = Serial.read();
-    if (pythonSerialData == '1') {
-      analogWrite(ledPin, 100);
-      Serial.println("data recieved");
-    } else if (pythonSerialData == '0') {
-      analogWrite(ledPin, 0);
-      Serial.println("data recieved");
-    }
+    pythonSerialData = Serial.read();
+  }
+  if (pythonSerialData == '1') {
+    photocellReading = analogRead(photocellPin);
+    myPID.Compute();
+    analogWrite(ledPin, ledBrightness);
+    Serial.println(photocellReading);
+  }
+  if (pythonSerialData == '0') {
+    analogWrite(ledPin, 0);
   }
 }
